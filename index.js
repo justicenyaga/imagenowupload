@@ -5,7 +5,6 @@ const morgan = require("morgan");
 const FormData = require("form-data");
 const fs = require("fs");
 const path = require("path");
-const bodyParser = require("body-parser");
 const crypto = require("crypto");
 
 const app = express();
@@ -13,8 +12,6 @@ const app = express();
 // Middleware to parse JSON
 app.use(morgan("tiny"));
 app.use(express.json());
-app.use(bodyParser.json({ limit: "900mb" }));
-app.use(bodyParser.urlencoded({ extended: true, limit: "900mb" }));
 
 // In-memory storage for request bodies
 const storage = {};
