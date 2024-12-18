@@ -11,7 +11,10 @@ const app = express();
 
 // Middleware to parse JSON
 app.use(morgan("tiny"));
-app.use(express.json());
+app.use(express.json({ limit: "50mb", extended: true }));
+app.use(
+  express.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }),
+);
 
 // In-memory storage for request bodies
 const storage = {};
