@@ -5,11 +5,21 @@ const morgan = require("morgan");
 const FormData = require("form-data");
 const fs = require("fs");
 const path = require("path");
+const bodyParser = require("body-parser");
+const crypto = require("crypto");
+
 const app = express();
 
 // Middleware to parse JSON
 app.use(morgan("tiny"));
 app.use(express.json());
+app.use(bodyParser.json());
+
+// In-memory storage for request bodies
+const storage = {};
+
+// generate random id
+const generateId = () => crypto.randomUUID();
 
 // Helper function to download a file
 const downloadFile = async (fileUrl, destPath) => {
@@ -132,6 +142,25 @@ app.post("/upload-file", async (req, res) => {
     if (fs.existsSync(tempFilePath)) {
       fs.unlinkSync(tempFilePath);
     }
+  }
+});
+
+// API to store the request body and return an ID
+app.post("/store", (req, res) => {
+  const id = generateId();
+  storage[id] = req.body; // Store the body using the ID
+  res.json({ message: "Body stored successfully!", id });
+});
+
+// API to retrieve stored body by ID
+app.get("/retrieve/:id", (req, res) => {
+  const id = req.params.id;
+  const content = storage[id];
+
+  if (content) {
+    res.json({ id, data: content });
+  } else {
+    res.status(404).json({ message: "Content not found for the given ID." });
   }
 });
 
